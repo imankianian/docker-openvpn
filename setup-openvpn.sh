@@ -14,7 +14,7 @@ TZ=${1}
 SERVER_IP=${2}
 NUM=${3}
 SERVER_DIR=/etc/openvpn/server
-EASYRSA_DIR=/etc/openvpn/easy-rsa
+EASYRSA_DIR=/usr/share/easy-rsa
 CERTIFICATES_DIR=/etc/openvpn/client-certificates
 BASE_CONFIG=$CERTIFICATES_DIR/base.conf
 KEY_DIR=$CERTIFICATES_DIR/keys
@@ -81,8 +81,6 @@ fi
 apt install -y openvpn easy-rsa iptables
 
 # Setup CA and server certificate
-mkdir /etc/openvpn/easy-rsa
-ln -s /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/
 echo -e 'set_var EASYRSA_ALGO "ec"\nset_var EASYRSA_DIGEST "sha256"' > $EASYRSA_DIR/vars
 $EASYRSA_DIR/easyrsa init-pki
 dd if=/dev/urandom of=pki/.rnd bs=256 count=1
