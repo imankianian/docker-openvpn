@@ -3,7 +3,7 @@
 # Define variables and functions
 
 if [[ $# -ne 3 ]]; then
-        echo "You must enter three arguments. ehe first one must be your timezone, eg. Asia/Tehran. The second one must be server IP and the last one must be the number of certificates you wish to be generated automatically."
+        echo "You must enter three arguments. The first one must be your timezone, eg. Asia/Tehran. The second one must be server IP and the last one must be the number of certificates you wish to be generated automatically."
 	exit 1
 fi
 
@@ -13,6 +13,7 @@ export EASYRSA_BATCH=1
 TZ=${1}
 SERVER_IP=${2}
 NUM=${3}
+
 SERVER_DIR=/etc/openvpn/server
 EASYRSA_DIR=/usr/share/easy-rsa
 CERTIFICATES_DIR=/etc/openvpn/client-certificates
@@ -67,18 +68,9 @@ for ((i=0; i<$NUM; i++)); do
 done    
 }
 
-# Setup container & install necessary packages
-
-apt update
-apt dist-upgrade -y
-apt autoremove -y
-
-if [[ ! -f "/etc/timezone" ]]; then
-	echo $TZ > /etc/timezone
-	apt install -y tzdata
-fi
-
-apt install -y openvpn easy-rsa iptables
+# Setup user timezone
+ln -sf /usr/share/zoneinfo/$TZ  /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
 
 # Setup CA and server certificate
 echo -e 'set_var EASYRSA_ALGO "ec"\nset_var EASYRSA_DIGEST "sha256"' > $EASYRSA_DIR/vars
@@ -137,5 +129,6 @@ iptables -A FORWARD -i $INTERFACE -o tun0 -m state --state RELATED,ESTABLISHED -
 iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $INTERFACE -j MASQUERADE
 iptables -A OUTPUT -o tun0 -j ACCEPT
 
+# Generate client certificates
 make_certificates
 openvpn --config $SERVER_DIR/server.conf
