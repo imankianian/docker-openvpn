@@ -2,8 +2,8 @@
 
 # Define variables and functions
 
-if [[ $# -ne 3 ]]; then
-        echo "You must enter three arguments. The first one must be your timezone, eg. Asia/Tehran. The second one must be server IP and the last one must be the number of certificates you wish to be generated automatically."
+if [[ $# -ne 4 ]]; then
+        echo "You must enter four arguments: The first one must be your timezone, eg. Asia/Tehran, the second one must be the server IP, the third one must be the server port and the last one must be the number of certificates you wish to be generated automatically."
 	exit 1
 fi
 
@@ -12,7 +12,8 @@ export EASYRSA_BATCH=1
 
 TZ=${1}
 SERVER_IP=${2}
-NUM=${3}
+SERVER_PORT=${3}
+NUM=${4}
 
 SERVER_DIR=/etc/openvpn/server
 EASYRSA_DIR=/usr/share/easy-rsa
@@ -27,7 +28,7 @@ mkdir -p $CERTIFICATES_DIR/keys
 mkdir -p $CERTIFICATES_DIR/files
 
 echo "client
-remote $SERVER_IP 1194
+remote $SERVER_IP $SERVER_PORT
 proto udp
 dev tun
 nobind
@@ -96,7 +97,7 @@ group nogroup
 push \"redirect-gateway def1 bypass-dhcp\"
 push \"dhcp-option DNS 208.67.222.222\"
 push \"dhcp-option DNS 208.67.220.220\"
-port 1194
+port $SERVER_PORT
 proto udp
 explicit-exit-notify 1
 dev tun
@@ -121,7 +122,7 @@ mkdir -p /dev/net
 if [ ! -c /dev/net/tun ]; then
     mknod /dev/net/tun c 10 200
 fi
-iptables -A INPUT -i $INTERFACE -m state --state NEW -p udp --dport 1194 -j ACCEPT
+iptables -A INPUT -i $INTERFACE -m state --state NEW -p udp --dport $SERVER_PORT -j ACCEPT
 iptables -A INPUT -i tun0 -j ACCEPT
 iptables -A FORWARD -i tun0 -j ACCEPT
 iptables -A FORWARD -i tun0 -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
