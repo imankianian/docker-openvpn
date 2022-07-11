@@ -135,7 +135,7 @@ done
 make_certificates $NUM
 
 # Create a status file in server dir to let the parent script know it's safe to start the service in later calls
-echo "OK" > $SERVER_DIR/server-config
+echo "OK" > $SERVER_DIR/config-status
 
 # Finally, if everything went right, start the server
 openvpn --config $SERVER_DIR/server.conf
