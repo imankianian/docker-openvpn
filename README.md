@@ -29,7 +29,7 @@ There also other options that you need to set:
 2. You need to expose the port that your server listens on. You can use `-p` option for this.
 3. You also need to allow your container to adjust network settings to route packets. You can use `--cap-add` for this. 
 
-example: Consider I want to run a server with the following conditions:
+**example**: Consider I want to run a server with the following conditions:
 
 - It runs in Berlin. 
 - Server IP is 160.160.160.160
