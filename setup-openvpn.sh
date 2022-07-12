@@ -106,14 +106,15 @@ auth SHA256
 key-direction 1
 verb 3" > $CERTIFICATES_DIR/base.conf
 
+cp $SERVER_DIR/ta.key $CERTIFICATES_DIR/keys
+cp $SERVER_DIR/ca.crt $CERTIFICATES_DIR/keys
+
 for ((i=0; i<$NUM; i++)); do
 
     $EASYRSA_DIR/easyrsa gen-req client$i nopass
     $EASYRSA_DIR/easyrsa sign-req client client$i
     cp /pki/issued/client$i.crt $CERTIFICATES_DIR/keys
     cp /pki/private/client$i.key $CERTIFICATES_DIR/keys
-    cp $SERVER_DIR/ta.key $CERTIFICATES_DIR/keys
-    cp $SERVER_DIR/ca.crt $CERTIFICATES_DIR/keys
     cat ${BASE_CONFIG} \
     <(echo -e "<ca>") \
     ${KEY_DIR}/ca.crt \
