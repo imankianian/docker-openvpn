@@ -51,6 +51,8 @@ else
 
 	export SERVER_DIR TZ SERVER_IP SERVER_PORT NUM
 	mkdir $SERVER_DIR
+	mkdir /var/log/openvpn
+
 	./setup-openvpn.sh
 fi
 
