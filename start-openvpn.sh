@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 SERVER_DIR=/etc/openvpn/server
 
@@ -50,6 +50,7 @@ else
 	NUM=${4}
 
 	export SERVER_DIR TZ SERVER_IP SERVER_PORT NUM
+	mkdir $SERVER_DIR
 	./setup-openvpn.sh
 fi
 

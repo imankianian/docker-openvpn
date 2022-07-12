@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # assign the inputs to variables
 
@@ -13,9 +13,7 @@ OUTPUT_DIR=$CERTIFICATES_DIR/files
 
 # Setup user timezone
 
-ln -sf /usr/share/zoneinfo/$TZ  /etc/localtime
-dpkg-reconfigure -f noninteractive tzdata
-
+cp /usr/share/zoneinfo/$TZ /etc/localtime
 
 # Setup CA and server certificate
 
@@ -106,25 +104,31 @@ auth SHA256
 key-direction 1
 verb 3" > $CERTIFICATES_DIR/base.conf
 
-for ((i=0; i<$NUM; i++)); do
+cp $SERVER_DIR/ta.key $CERTIFICATES_DIR/keys
+cp $SERVER_DIR/ca.crt $CERTIFICATES_DIR/keys
 
-    $EASYRSA_DIR/easyrsa gen-req client$i nopass
-    $EASYRSA_DIR/easyrsa sign-req client client$i
-    cp /pki/issued/client$i.crt $CERTIFICATES_DIR/keys
-    cp /pki/private/client$i.key $CERTIFICATES_DIR/keys
-    cp $SERVER_DIR/ta.key $CERTIFICATES_DIR/keys
-    cp $SERVER_DIR/ca.crt $CERTIFICATES_DIR/keys
-    cat ${BASE_CONFIG} \
-    <(echo -e "<ca>") \
-    ${KEY_DIR}/ca.crt \
-    <(echo -e "</ca>\n<cert>") \
-    ${KEY_DIR}/client$i.crt \
-    <(echo -e "</cert>\n<key>") \
-    ${KEY_DIR}/client$i.key \
-    <(echo -e "</key>\n<tls-auth>") \
-    ${KEY_DIR}/ta.key \
-    <(echo -e "</tls-auth>") \
-    > ${OUTPUT_DIR}/client$i.ovpn
+i=0
+
+while [[ $i -lt $NUM ]]; do
+
+	$EASYRSA_DIR/easyrsa gen-req client$i nopass
+	$EASYRSA_DIR/easyrsa sign-req client client$i
+	cp /pki/issued/client$i.crt $CERTIFICATES_DIR/keys
+	cp /pki/private/client$i.key $CERTIFICATES_DIR/keys
+
+	cat ${BASE_CONFIG} \
+	<(echo -e "<ca>") \
+	${KEY_DIR}/ca.crt \
+	<(echo -e "</ca>\n<cert>") \
+	${KEY_DIR}/client$i.crt \
+	<(echo -e "</cert>\n<key>") \
+	${KEY_DIR}/client$i.key \
+	<(echo -e "</key>\n<tls-auth>") \
+	${KEY_DIR}/ta.key \
+	<(echo -e "</tls-auth>") \
+	> ${OUTPUT_DIR}/client$i.ovpn
+
+	i=$(( i + 1 ))
 
 done
 
@@ -132,7 +136,7 @@ done
 
 # Create the certificates
 
-make_certificates $NUM
+make_certificates
 
 # Create a status file in server dir to let the parent script know it's safe to start the service in later calls
 echo "OK" > $SERVER_DIR/config-status
