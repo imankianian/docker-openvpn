@@ -35,7 +35,7 @@ openvpn --genkey --secret $SERVER_DIR/ta.key
 # Configure OpenVPN server
 
 echo "tls-auth $SERVER_DIR/ta.key 0
---data-ciphers AES-256-CBC
+cipher AES-256-CBC
 auth SHA256
 dh $SERVER_DIR/dh.pem
 user nobody
