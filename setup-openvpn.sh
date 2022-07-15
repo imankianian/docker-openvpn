@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# assign the inputs to variables
-
 export DEBIAN_FRONTEND=noninteractive
 export EASYRSA_BATCH=1
 

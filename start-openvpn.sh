@@ -18,7 +18,7 @@ then
 			mknod /dev/net/tun c 10 200
 		fi
 
-		# set iptables rules again since they've been removed when container stopped
+		# set the iptables rules again since they've been removed when container stopped
 
 		INTERFACE=$(ip route list default | cut -f 5 -d " ")
 		SERVER_PORT=$(grep "port" /etc/openvpn/server/server.conf | cut -d' ' -f2)
@@ -37,7 +37,7 @@ then
 	fi
 else
 	
-	# First of all, let's count the inputs
+	# Let's count the inputs
 
 	if [[ $# -ne 4 ]]; then
         echo "You must enter four arguments: The first one must be your timezone, eg. Asia/Tehran, the second one must be the server IP, the third one must be the server port and the last one must be the number of certificates you wish to be generated automatically."
