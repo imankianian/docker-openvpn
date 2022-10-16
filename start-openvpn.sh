@@ -23,7 +23,7 @@ then
 		INTERFACE=$(ip route list default | cut -f 5 -d " ")
 		SERVER_PORT=$(grep "port" /etc/openvpn/server/server.conf | cut -d' ' -f2)
 
-		iptables -A INPUT -i $INTERFACE -m state --state NEW -p udp --dport $SERVER_PORT -j ACCEPT
+		iptables -A INPUT -i $INTERFACE -m state --state NEW -p tcp --dport $SERVER_PORT -j ACCEPT
 		iptables -A INPUT -i tun0 -j ACCEPT
 		iptables -A FORWARD -i tun0 -j ACCEPT
 		iptables -A FORWARD -i tun0 -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT

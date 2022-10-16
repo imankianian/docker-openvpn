@@ -40,8 +40,8 @@ push \"redirect-gateway def1 bypass-dhcp\"
 push \"dhcp-option DNS 208.67.222.222\"
 push \"dhcp-option DNS 208.67.220.220\"
 port $SERVER_PORT
-proto udp
-explicit-exit-notify 1
+proto tcp
+explicit-exit-notify 0
 dev tun
 ca $SERVER_DIR/ca.crt
 cert $SERVER_DIR/server.crt
@@ -68,7 +68,7 @@ mkdir -p /dev/net
 if [ ! -c /dev/net/tun ]; then
     mknod /dev/net/tun c 10 200
 fi
-iptables -A INPUT -i $INTERFACE -m state --state NEW -p udp --dport $SERVER_PORT -j ACCEPT
+iptables -A INPUT -i $INTERFACE -m state --state NEW -p tcp --dport $SERVER_PORT -j ACCEPT
 iptables -A INPUT -i tun0 -j ACCEPT
 iptables -A FORWARD -i tun0 -j ACCEPT
 iptables -A FORWARD -i tun0 -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -85,7 +85,7 @@ mkdir -p $CERTIFICATES_DIR/files
 
 echo "client
 remote $SERVER_IP $SERVER_PORT
-proto udp
+proto tcp
 dev tun
 nobind
 persist-key
